@@ -1,10 +1,15 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def generate_launch_description():
+    text = LaunchConfiguration('text', default='Hello, ROS2!')
+
     return LaunchDescription([
+        DeclareLaunchArgument('text', default_value=text),
         Node(
             package='task02',
             executable='sender',
@@ -12,7 +17,10 @@ def generate_launch_description():
                 os.path.join(
                     get_package_share_directory('task02'),
                     'task02.yaml'
-                )
+                ),
+                {
+                    'text': text
+                }
             ]
         )
     ])
