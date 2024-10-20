@@ -7,21 +7,21 @@ class MinimalService(Node):
 
     def __init__(self):
         super().__init__('minimal_service')
+        self.client = self.create_client(Trigger, '/spgc/trigger')
         self.declare_parameter('service_name', '/trigger_service')
         self.declare_parameter('default_string', 'No service available')
         self.message = self.get_parameter('default_string').get_parameter_value().string_value
         service_name = self.get_parameter('service_name').get_parameter_value().string_value
-        
+        self.srv = self.create_service(Trigger, service_name, self.service_callback)
         self.get_message()
 
-        self.srv = self.create_service(Trigger, service_name, self.service_callback)
-
     def get_message(self):
-        client = self.create_client(Trigger, '/spgc/trigger')
-        if client.wait_for_service(timeout_sec=1.0):
-            future = client.call_async(Trigger.Request())
-            rclpy.spin_until_future_complete(self, future)
-            self.message = future.result().message
+        if not self.client.wait_for_service(timeout_sec=5.0):
+            return
+
+        self.future = self.client.call_async(Trigger.Request())
+        rclpy.spin_until_future_complete(self, self.future)
+        self.message = self.future.result().message
 
     def service_callback(self, request, response):
         response.success = True
