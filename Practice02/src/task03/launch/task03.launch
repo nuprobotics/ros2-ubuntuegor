@@ -1,0 +1,8 @@
+<launch>
+    <node
+        pkg="task03"
+        exec="whatever"
+        >
+        <param from ="$(find-pkg-share task03)/task03.yaml"/>
+    </node>
+</launch>
