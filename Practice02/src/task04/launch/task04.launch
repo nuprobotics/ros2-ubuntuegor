@@ -1,0 +1,10 @@
+<launch>
+    <arg name ="topic_name" default ="/send_image_here"/>
+
+    <node
+        pkg="task04"
+        exec="receiver"
+        >
+        <param name="topic_name" value ="$(var topic_name)"/>
+    </node>
+</launch>
